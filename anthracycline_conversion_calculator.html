@@ -1,0 +1,289 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <title>Cumulative anthracycline dose calculator</title>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h1>cumulative anthracycline dose calculator prototype</h1>
+                <ul>
+                    <li>
+                        adult references
+                        <ul>
+                            <li><a href="http://annonc.oxfordjournals.org/content/16/5/798.full#T4">http://annonc.oxfordjournals.org/content/16/5/798.full#T4</a></li>
+                            <li><a href="http://www.nature.com/bmt/journal/v28/n3/full/1703133a.html">http://www.nature.com/bmt/journal/v28/n3/full/1703133a.html</a></li>
+                            <li><a href="https://ccss.stjude.org/docs/ccss/concept-prop-14-01.pdf">https://ccss.stjude.org/docs/ccss/concept-prop-14-01.pdf</a></li>
+                            <li><a href="http://jco.ascopubs.org/content/21/6/1074/T2.expansion.html">http://jco.ascopubs.org/content/21/6/1074/T2.expansion.html</a></li>
+                        </ul>
+
+                    </li>
+                    <li>peds references</li>
+                    <ul>
+                        <li><a href="http://www.survivorshipguidelines.org/pdf/LTFUGuidelines_40.pdf">Children's Oncology Group LTFUGidelines Version 4.0</a></li>
+                    </ul>
+                </ul>
+                
+                <br />
+				<div class="row">
+				<div class="col-sm-6">
+                <h4><u>selected conversion factors</u></h4>
+                <p id="dose_equ_info">
+                    DOXOrubicin: <b>1</b> <br />
+                    DAUNOrubicin: <b>0.5</b> <br />
+                    EPIrubicin: <b>0.5</b> <br />
+                    IDArubicin: <b>2</b> <br />
+                    mitoXANTRONE: <b>2.2</b> <br />
+                </p>
+				</div>
+				<div class="col-sm-6">
+				<h4><u>default conversion factor explanation</u></h4>
+                <p>
+				<ul>
+					<li>The default pediatric conversion factors can be found in the Children's Oncology Group LTFUGidelines Version 4.0</li>
+					<li>The default adult conversion factors reference: Keefe DL. Anthracycline-induced cardiomyopathy. Semin Oncol. 2001; 28 (4 suppl 12):2-7. </li>
+				</ul>
+                </p>
+				</div>
+				</div>
+                <p>
+                    cumulative dose = <b><span id="cumulative_dose" style="font-size: 25px;">0</span></b> mg/m&sup2
+                </p>
+                <form>
+                    <div class="table">
+                        <table class="table table-bordered">
+                            <tr>
+								<th>
+									<b>patient type</b>
+								</th>
+                                <th>
+                                    <b>ratios to use</b>
+                                </th>
+                                <th>
+                                    <b>data available for input</b>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <select name="pt_type" id="pt_type" class="form-control">
+                                        <option selected value="1">adult</option>
+                                        <option value="2">pediatric</option>
+                                    </select>
+                                </td>
+								<td>
+                                    <select name="equ_formula" id="equ_formula" class="form-control">
+                                        <option selected value="1">Keefe 2001</option>
+                                        <option value="2">COG ratios</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select name="input_mode" id="input_mode" class="form-control">
+                                        <option selected value="basic">mg/m&sup2 dose</option>
+                                        <option value="intermediate">BSA and dose</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>                    
+                    <div class="table">
+                        <table class="table table-bordered">
+                            <tbody id="input_table">
+                                <tr>
+                                    <th>
+                                        <b>drug</b>
+                                    </th>
+                                    <th class="intermediate" style="display: none;">
+                                        <b>BSA</b>
+                                    </th>
+                                    <th class="intermediate" style="display: none;">
+                                        <b>dose</b>
+                                    </th>
+                                    <th>
+                                        <b>mg/m&sup2 dose</b>
+                                    </th>
+                                    <th>
+                                        <b>conversion factor</b>
+                                    </th>
+                                    <th>
+                                        <b>calculated dose equivalent</b>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <select name="drug" id="drug1" class="form-control" onchange="calculate();">
+                                            <option selected></option>
+                                            <option value="1">DOXOrubicin</option>
+                                            <option value="2">DAUNOrubicin</option>
+                                            <option value="3">EPIrubicin</option>
+                                            <option value="4">IDArubicin</option>
+                                            <option value="5">mitoXANTRONE</option>
+                                        </select>
+
+                                    </td>
+                                    <td class="intermediate" style="display: none;">
+                                        <input type="number" name="BSA" id="BSA1" class="form-control" onchange="calculate();" />
+                                    </td>
+                                    <td class="intermediate" style="display: none;">
+                                        <input type="number" name="dose" id="dose1" class="form-control" onchange="calculate();" />
+                                    </td>
+                                    <td>
+                                        <input type="number" name="mgperm2dose" id="mgperm2dose1" class="form-control" onchange="calculate();" />
+                                    </td>
+                                    <td>
+                                        <input type="number" name="conv_factor" id="conv_factor1" class="form-control" disabled />
+                                    </td>
+                                    <td>
+                                        <input type="number" name="dose_equ" id="dose_equ1" class="form-control" disabled />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <button id="addRow" onclick="event.preventDefault();">add row</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        //listen for patient type to change.  When it does, update the equ_formula.	
+        document.getElementById('pt_type').addEventListener('change', function () {
+            update_equ_formula(this.value)
+        });
+
+        //listener to update the drug dictionary and recalculate existing rows when equ_formula is changed. 
+        document.getElementById('equ_formula').addEventListener('change', function () {
+            update_drug_dict(this.value)
+        });
+
+
+        //listener to hide or show elements based on what inputs the user selects to use. 
+		document.getElementById('input_mode').addEventListener('change', function () {
+		    update_display_mode();
+		});
+
+        //listen for click on add new row button
+		document.getElementById('addRow').addEventListener('click', function () {
+		    add_row();
+		});
+
+        //function to returns the what the new display state will be of certain elements depending on the available inputs select.
+        function display_mode() {
+			var mode = document.getElementById('input_mode').value;
+            var display_mode = {};
+            if (mode == 'intermediate') {
+                var display_mode = {
+                    mgperm2disabled: true, // set mgperm2 input to disable = true because we are going to use dose and bsa to calculate mgperm2
+                    intermediate: null //set the css style to null to display the elements
+                }
+            } else {
+                var display_mode = {
+                    mgperm2disabled: false,
+                    intermediate: 'display: none;'
+                }
+            };
+            return display_mode
+        }
+        //I chose to put drugs and conversion factors in this format because it will make it easier to add or update conversion conventions in the future. 
+        function drug_dict(equ_formula) {
+            var data = {};
+        //1 = Keefe 2001, 2 = COG ratios
+            if (equ_formula == '1') {
+                data = { '1': ['DOXOrubicin', 1], '2': ['DAUNOrubicin', 0.5], '3': ['EPIrubicin', 0.5], '4': ['IDArubicin', 2], '5':['mitoXANTRONE', 2.2] }
+            } else {
+                data = { '1': ['DOXOrubicin', 1], '2': ['DAUNOrubicin', 1], '3': ['EPIrubicin', 0.67], '4': ['IDArubicin', 5], '5':['mitoXANTRONE', 4] }
+            }
+            return data
+        }
+
+        //The calculate function is called a lot when entering data into the form.  Although this may not be the most efficient method, it ensures the data on the screen is up to date. 
+        function calculate() {
+            var equ_formula = document.getElementById('equ_formula').value;
+            var drug_data = drug_dict(equ_formula);
+            var x = document.getElementById('input_table').rows.length;
+            var cumulative_dose = 0;
+            for (var i = 1; i < x; i++) {
+                //look for input mode to determine how mgperm2dose should be calculated
+                if (document.getElementById('input_mode').value == 'intermediate') {
+                    var m2dose = document.getElementById('dose' + i).value / document.getElementById('BSA' + i).value;
+                    document.getElementById('mgperm2dose' + i).value = m2dose.toFixed(1).replace(/\.0+$/, '');
+                } else {
+                    var m2dose = document.getElementById('mgperm2dose' + i).value;
+                }
+                var drug = document.getElementById('drug' + i).value;
+                //do not calculate on rows that do not have a drug selected
+				if(drug != ''){ 
+					var conv_factor = drug_data[drug][1];
+					var drug_cumulative_dose = m2dose * conv_factor;
+					document.getElementById('conv_factor' + i).value = conv_factor;
+					document.getElementById('dose_equ' + i).value = drug_cumulative_dose.toFixed(1).replace(/\.0+$/, '');
+					cumulative_dose = cumulative_dose + drug_cumulative_dose
+				 }
+            }
+            if (isNaN(cumulative_dose)) { cumulative_dose = 0 };
+            document.getElementById('cumulative_dose').innerHTML = cumulative_dose.toFixed(1).replace(/\.0+$/, '');
+        }
+
+        function update_display_mode() {
+            var d = display_mode();
+            for (var elements = document.getElementsByClassName('intermediate'), i = elements.length; i--;) elements[i].style.cssText = d.intermediate;
+            for (var elements = document.getElementsByName('mgperm2dose'), i = elements.length; i--;) elements[i].disabled = d.mgperm2disabled;
+            calculate();
+        }
+
+        function update_drug_dict(equ_formula) {
+            var drug_data = drug_dict(equ_formula);
+            //update dose_equ_info
+            var a = document.getElementById('dose_equ_info');
+            a.innerHTML = '';
+            for (var k in drug_data) { a.innerHTML = a.innerHTML + drug_data[k][0] + ': <b>' + drug_data[k][1] + '</b> <br />' };
+            calculate();
+        //}
+        }
+
+        //pass in the current pt_type value so the function knows what value to set equ_formula to. 
+        function update_equ_formula(pt_type_val) {
+            equ_formula = document.getElementById('equ_formula')
+            equ_formula.value = pt_type_val;
+            //update the drug_dict to reflect the change of equ_formula. pass in the current equ_formula
+            update_drug_dict(equ_formula.value);
+        }
+
+
+        //add a new row
+        function add_row() {
+            var d = display_mode();
+            var table = document.getElementById('input_table');
+            var x = table.rows.length;
+            var row = table.insertRow(x);
+            var c0 = row.insertCell(0);
+            var c1 = row.insertCell(1);
+            var c2 = row.insertCell(2);
+            var c3 = row.insertCell(3);
+            var c4 = row.insertCell(4);
+            var c5 = row.insertCell(5);
+            c1.className = 'intermediate'
+            c1.style.cssText = d.intermediate;
+            c2.className = 'intermediate'
+            c2.style.cssText = d.intermediate;
+            c0.innerHTML = '<select name="drug" id="drug' + x + '" class="form-control" onchange="calculate()">' +
+                           '    <option selected></option>' +
+                           '    <option value="1">DOXOrubicin</option>' +
+                           '    <option value="2">DAUNOrubicin</option>' +
+                           '    <option value="3">EPIrubicin</option>' +
+                           '    <option value="4">IDArubicin</option>' +
+                           '    <option value="5">mitoXANTRONE</option>' +
+                           '</select>'
+            c1.innerHTML = '<input type="number" name="BSA" id="BSA' + x + '" class="form-control intermediate" style="' + d.intermrdiate + '" onchange="calculate();" />'
+            c2.innerHTML = '<input type="number" name="dose" id="dose' + x + '" class="form-control intermediate" style="' + d.intermrdiate + '" onchange="calculate();" />'
+            c3.innerHTML = '<input type="number" name="mgperm2dose" id="mgperm2dose' + x + '" class="form-control" onchange="calculate()" />'
+            c4.innerHTML = '<input type="number" name="conv_factor" id="conv_factor' + x + '" class="form-control" disabled />'
+            c5.innerHTML = '<input type="number" name="dose_equ" id="dose_equ' + x + '" class="form-control" disabled />'
+            document.getElementById("mgperm2dose" + x).disabled = d.mgperm2disabled;
+        }
+    </script>
+</body>
+</html>
